@@ -105,7 +105,6 @@ ul{margin:0;padding:0;list-style:none}
 .hero h1{font-size:clamp(2.05rem,1.15rem + 3.5vw,3.3rem);margin-top:.5em}
 .hero h1 em{font-style:normal;color:var(--blue-deep)}
 .hero-doc{display:flex;align-items:center;gap:12px;margin-top:16px;font-family:var(--font-head);font-weight:500;font-size:clamp(1.08rem,.95rem + .5vw,1.3rem);color:var(--ink);line-height:1.25}
-.hero-doc img{width:48px;height:48px;border-radius:50%;border:2px solid #fff;box-shadow:var(--shadow-sm);flex:none}
 .hero-lede{margin-top:12px;font-size:1.06rem;max-width:34em}
 .hero-lede strong{color:var(--ink);font-weight:600}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
@@ -113,13 +112,15 @@ ul{margin:0;padding:0;list-style:none}
 .chips .icon{width:1.05em;height:1.05em;color:var(--blue-deep)}
 .chips .star{color:var(--gold);fill:var(--gold);stroke:var(--gold)}
 .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
-.hero-photo{display:none}
+.hero-photo{position:relative;margin:26px 0 0;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.hero-photo img{width:100%;aspect-ratio:3/2;object-fit:cover}
 
 /* Consultation card */
-.consult{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(221,232,239,.9);overflow:hidden;width:100%;max-width:546px;margin-inline:auto;position:relative}
+.consult-slot{width:100%;max-width:546px;margin-inline:auto}
+.consult{background:#fff;color:var(--body);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(221,232,239,.9);overflow:hidden;width:100%;position:relative}
 .consult::before{content:"";display:block;height:5px;background:linear-gradient(90deg,var(--blue),var(--teal))}
 .consult-head{padding:22px 21px 0}
-.consult-head h2{font-size:clamp(1.45rem,1.2rem + 1vw,1.75rem)}
+.consult .consult-head h2{font-size:clamp(1.45rem,1.2rem + 1vw,1.75rem);color:var(--ink);margin-top:0}
 .consult-head p{margin-top:6px;font-size:.98rem}
 /* The live GHL form is embedded as-is. The negative margins only crop the embed's
    own outer margin + dashed border so it sits flush inside this card. */
@@ -129,6 +130,17 @@ ul{margin:0;padding:0;list-style:none}
 .consult-foot{display:flex;align-items:center;justify-content:center;gap:.5em;flex-wrap:wrap;padding:14px 20px 18px;border-top:1px solid var(--line);font-size:.92rem;background:var(--mist)}
 .consult-foot a{font-family:var(--font-head);font-weight:600;color:var(--navy);text-decoration:none;display:inline-flex;align-items:center;gap:.35em;min-height:32px}
 .consult-foot a:hover{color:var(--blue-deeper)}
+.consult-close{display:none;position:sticky;top:10px;z-index:3;place-items:center;width:40px;height:40px;margin:10px 10px -50px auto;padding:0;border:1px solid var(--line);border-radius:50%;background:#fff;color:var(--navy);cursor:pointer;box-shadow:var(--shadow-sm)}
+.consult-close:hover{border-color:var(--blue);color:var(--blue-deeper)}
+.consult-close .icon{width:18px;height:18px;stroke-width:2.2}
+/* Popup mode: the SAME form card is lifted into a dialog (no second copy of the form) */
+.consult-backdrop{position:fixed;inset:0;z-index:90;background:rgba(7,31,51,.62);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s}
+.modal-open .consult-backdrop{opacity:1;visibility:visible}
+.modal-open,.modal-open body{overflow:hidden}
+.consult.is-modal{position:fixed;z-index:100;left:0;right:0;bottom:0;top:auto;max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain;border-radius:var(--radius) var(--radius) 0 0;box-shadow:0 -20px 60px -20px rgba(0,0,0,.5);animation:consult-in .24s ease both}
+.consult.is-modal .consult-close{display:grid}
+.consult.is-modal .consult-head{padding-right:60px}
+@keyframes consult-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
 /* Why */
 .why-grid{display:grid;gap:28px;align-items:center}
@@ -189,7 +201,8 @@ ul{margin:0;padding:0;list-style:none}
 /* Final CTA + location */
 .final{background:var(--navy);color:#d4e2ec;position:relative;overflow:hidden}
 .final::before{content:"";position:absolute;left:-200px;bottom:-260px;width:640px;height:640px;border-radius:50%;background:radial-gradient(closest-side,rgba(27,154,216,.28),rgba(27,154,216,0));pointer-events:none}
-.final-grid{position:relative;display:grid;gap:30px;align-items:center}
+.final-grid{position:relative;display:grid;gap:30px;align-items:start}
+.final-info{display:grid;gap:26px;min-width:0}
 .final .eyebrow{color:var(--aqua)}
 .final h2{color:#fff;font-size:clamp(1.8rem,1.2rem + 2.3vw,2.7rem);margin-top:.45em}
 .final-copy>p{margin-top:.9em;font-size:1.06rem;max-width:32em}
@@ -225,7 +238,8 @@ ul{margin:0;padding:0;list-style:none}
 /* ≥ 600px: card is wide enough for the embed's two-column field layout */
 @media (min-width:600px){
   :root{--gutter:28px}
-  .consult{width:546px}
+  .consult.is-modal{left:50%;right:auto;top:50%;bottom:auto;width:546px;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);border-radius:var(--radius);box-shadow:0 40px 90px -30px rgba(0,0,0,.6);transform:translate(-50%,-50%);animation-name:consult-in-c}
+  @keyframes consult-in-c{from{opacity:0;transform:translate(-50%,calc(-50% + 14px))}to{opacity:1;transform:translate(-50%,-50%)}}
   .consult-head{padding:24px 21px 0}
   .form-embed{min-height:681px}
   .form-embed iframe{width:680px;height:828px;margin:-41px -68px -106px}
@@ -263,14 +277,22 @@ ul{margin:0;padding:0;list-style:none}
   .sticky-cta{display:none}
   .has-sticky{padding-bottom:0}
 }
+@media (max-width:1079px){
+  /* stacked footer: copy → form → location */
+  .final-info{display:contents}
+  .consult-slot{order:2}
+  .loc{order:3}
+}
+@media (min-width:960px){
+  .hero-grid{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:56px;align-items:center}
+  .hero-photo{margin:0 16px 16px 0;overflow:visible;box-shadow:none}
+  .hero-photo::before{content:"";position:absolute;inset:16px -16px -16px 16px;border-radius:var(--radius);background:linear-gradient(150deg,rgba(143,223,240,.55),rgba(0,214,192,.28))}
+  .hero-photo img{position:relative;aspect-ratio:4/5;max-height:620px;object-position:50% 20%;border-radius:var(--radius);box-shadow:var(--shadow)}
+}
 @media (min-width:1080px){
-  .hero-grid{grid-template-columns:minmax(0,1fr) 546px;gap:56px;align-items:start}
-  .consult{margin:0}
-  .hero-doc img{display:none}
-  .hero-photo{display:block;margin:28px 0 0;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);position:relative}
-  .hero-photo img{width:100%;aspect-ratio:16/9;object-fit:cover;object-position:50% 22%}
   .cards{grid-template-columns:repeat(4,1fr)}
-  .final-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:56px}
+  .final-grid{grid-template-columns:minmax(0,1fr) 546px;gap:56px}
+  .consult-slot{margin:0}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -294,6 +316,7 @@ ul{margin:0;padding:0;list-style:none}
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.600-7 10-7 10z"/></symbol>
   <symbol id="i-family" viewBox="0 0 24 24"><circle cx="8" cy="7" r="3"/><circle cx="17" cy="9" r="2.3"/><path d="M2.500 20a5.500 5.500 0 0 1 11 0M14 20a4 4 0 0 1 7.500-1.800"/></symbol>
   <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.500"/><path d="M3 10h18M16 15h2"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.500l4.500 4.500L19 7.500"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.200 7-11.500A7 7 0 0 0 5 9.500C5 14.800 12 21 12 21z"/><circle cx="12" cy="9.500" r="2.500"/></symbol>
   <symbol id="i-aligner" viewBox="0 0 24 24"><path d="M3 8c0 6.500 4 11 9 11s9-4.500 9-11"/><path d="M7 8.500c0 4 2.200 6.500 5 6.500s5-2.500 5-6.500"/></symbol>
@@ -316,23 +339,20 @@ ul{margin:0;padding:0;list-style:none}
         <svg class="icon"><use href="#i-phone"/></svg>
         <span><small>Call Now</small>929-590-9843</span>
       </a>
-      <a class="btn btn-primary btn-sm header-cta" href="#consultation" data-cta="header-book">Book Free Consultation</a>
+      <a class="btn btn-primary btn-sm header-cta" href="#consultation" data-open-consult data-cta="header-book">Book Free Consultation</a>
     </div>
   </div>
 </header>
 
 <main id="top">
 
-<!-- 1 · HERO + CONSULTATION FORM -->
+<!-- 1 · HERO -->
 <section class="hero" aria-labelledby="hero-title">
   <div class="wrap hero-grid">
     <div class="hero-copy">
       <span class="pill"><i aria-hidden="true"></i>Free Consultation · Braces &amp; Invisalign</span>
       <h1 id="hero-title">Book a <em>Free</em> Braces or Invisalign Consultation</h1>
-      <p class="hero-doc">
-        <img src="assets/img/dr-adam-goodman-avatar.webp" width="128" height="128" alt="" decoding="async">
-        With Dr. Adam Goodman, Our Award-Winning Orthodontist
-      </p>
+      <p class="hero-doc">With Dr. Adam Goodman, Our Award-Winning Orthodontist</p>
       <p class="hero-lede">Experience the difference with Dr. Goodman — a <strong>Top 1% Diamond Plus Invisalign Provider</strong> with <strong>over 30 years of experience</strong>.</p>
       <ul class="chips" aria-label="Why patients choose Dr. Goodman">
         <li><svg class="icon star"><use href="#i-star"/></svg>5-Star Google Reviews</li>
@@ -341,46 +361,16 @@ ul{margin:0;padding:0;list-style:none}
         <li><svg class="icon"><use href="#i-spark"/></svg>Modern Orthodontic Technology</li>
       </ul>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="#consultation" data-cta="hero-book">Book My Free Consultation <svg class="icon"><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-primary" href="#consultation" data-open-consult data-cta="hero-book">Book My Free Consultation <svg class="icon"><use href="#i-arrow"/></svg></a>
         <a class="btn btn-ghost" href="tel:9295909843" data-cta="hero-call"><svg class="icon"><use href="#i-phone"/></svg>Call 929-590-9843</a>
       </div>
-      <figure class="hero-photo">
-        <picture>
-          <source media="(max-width:1079px)" srcset="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
-          <img src="assets/img/dr-goodman-with-patient-960.webp" srcset="assets/img/dr-goodman-with-patient-640.webp 640w, assets/img/dr-goodman-with-patient-960.webp 960w, assets/img/dr-goodman-with-patient-1280.webp 1280w" sizes="(min-width:1080px) 600px, 1px" width="960" height="640" alt="Dr. Adam Goodman standing beside a smiling patient" fetchpriority="high" decoding="async">
-        </picture>
-      </figure>
     </div>
-
-    <aside class="consult" id="consultation" aria-labelledby="consult-title">
-      <div class="consult-head">
-        <h2 id="consult-title">Book Your Free Consultation</h2>
-        <p>Braces or Invisalign — let's find the right treatment option for your smile.</p>
-      </div>
-      <!-- ONE primary form: the existing LeadConnector / GHL form
-           "LPF - Free Consultation For Braces Or Invisalign" (mT1efDJNCsAHLQAekObX).
-           Fields, validation, consent, CRM workflows and bot protection all run inside GHL. -->
-      <div class="form-embed">
-        <p class="form-loading" aria-hidden="true">Loading secure form…</p>
-        <iframe
-          src="https://api.leadconnectorhq.com/widget/form/mT1efDJNCsAHLQAekObX"
-          id="inline-mT1efDJNCsAHLQAekObX"
-          title="Free braces or Invisalign consultation request form"
-          data-layout="{'id':'INLINE'}"
-          data-trigger-type="alwaysShow"
-          data-trigger-value=""
-          data-activation-type="alwaysActivated"
-          data-activation-value=""
-          data-deactivation-type="neverDeactivate"
-          data-deactivation-value=""
-          data-form-name="LPF - Free Consultation For Braces Or Invisalign"
-          data-height="780"
-          data-layout-iframe-id="inline-mT1efDJNCsAHLQAekObX"
-          data-form-id="mT1efDJNCsAHLQAekObX"></iframe>
-      </div>
-      <noscript><p style="padding:0 20px 20px">Please enable JavaScript to book online, or call <a href="tel:9295909843">929-590-9843</a>.</p></noscript>
-      <p class="consult-foot">Prefer to talk? <a href="tel:9295909843" data-cta="form-call"><svg class="icon"><use href="#i-phone"/></svg>Call 929-590-9843</a></p>
-    </aside>
+    <figure class="hero-photo">
+      <picture>
+        <source media="(min-width:960px)" srcset="assets/img/dr-goodman-with-patient-tall-560.webp 560w, assets/img/dr-goodman-with-patient-tall-880.webp 880w" sizes="(min-width:1260px) 510px, 42vw" width="880" height="1100">
+        <img src="assets/img/dr-goodman-with-patient-960.webp" srcset="assets/img/dr-goodman-with-patient-640.webp 640w, assets/img/dr-goodman-with-patient-960.webp 960w, assets/img/dr-goodman-with-patient-1280.webp 1280w" sizes="(min-width:600px) 92vw, 100vw" width="960" height="640" alt="Dr. Adam Goodman standing beside a smiling patient" fetchpriority="high" decoding="async">
+      </picture>
+    </figure>
   </div>
 </section>
 
@@ -455,7 +445,7 @@ ul{margin:0;padding:0;list-style:none}
       </li>
     </ul>
     <div class="cta-row reveal">
-      <a class="btn btn-primary" href="#consultation" data-cta="treatments-book">Find the Right Option for My Smile <svg class="icon"><use href="#i-arrow"/></svg></a>
+      <a class="btn btn-primary" href="#consultation" data-open-consult data-cta="treatments-book">Find the Right Option for My Smile <svg class="icon"><use href="#i-arrow"/></svg></a>
       <small>Your consultation is completely free.</small>
     </div>
   </div>
@@ -485,7 +475,7 @@ ul{margin:0;padding:0;list-style:none}
         <img src="assets/img/logo-invisalign-teen.webp" width="501" height="96" loading="lazy" decoding="async" alt="Invisalign Teen">
         <img src="assets/img/logo-invisalign-first.webp" width="465" height="96" loading="lazy" decoding="async" alt="Invisalign First">
       </div>
-      <a class="btn btn-primary" href="#consultation" data-cta="doctor-book">Meet Dr. Goodman at My Free Consultation</a>
+      <a class="btn btn-primary" href="#consultation" data-open-consult data-cta="doctor-book">Meet Dr. Goodman at My Free Consultation</a>
     </div>
   </div>
 </section>
@@ -533,43 +523,81 @@ ul{margin:0;padding:0;list-style:none}
   </div>
 </section>
 
-<!-- 6 · FINAL CTA + LOCATION -->
+<!-- 6 · FINAL CTA + FORM + LOCATION -->
 <section class="section final" aria-labelledby="final-title">
   <div class="wrap final-grid">
-    <div class="final-copy reveal">
-      <span class="eyebrow">Free Braces &amp; Invisalign Consultation</span>
-      <h2 id="final-title">Ready to Find the Right Smile Treatment for You?</h2>
-      <p>Your consultation with Dr. Goodman is completely free. Explore your braces and Invisalign options, get a treatment plan tailored to your goals, and leave knowing exactly what to expect.</p>
-      <div class="hero-cta">
-        <a class="btn btn-light" href="#consultation" data-cta="final-book">Book My Free Consultation <svg class="icon"><use href="#i-arrow"/></svg></a>
-        <a class="btn btn-outline-light" href="tel:9295909843" data-cta="final-call"><svg class="icon"><use href="#i-phone"/></svg>Call 929-590-9843</a>
+    <div class="final-info">
+      <div class="final-copy reveal">
+        <span class="eyebrow">Free Braces &amp; Invisalign Consultation</span>
+        <h2 id="final-title">Ready to Find the Right Smile Treatment for You?</h2>
+        <p>Your consultation with Dr. Goodman is completely free. Explore your braces and Invisalign options, get a treatment plan tailored to your goals, and leave knowing exactly what to expect.</p>
+        <div class="hero-cta">
+          <a class="btn btn-light" href="#consultation" data-open-consult data-cta="final-book">Book My Free Consultation <svg class="icon"><use href="#i-arrow"/></svg></a>
+          <a class="btn btn-outline-light" href="tel:9295909843" data-cta="final-call"><svg class="icon"><use href="#i-phone"/></svg>Call 929-590-9843</a>
+        </div>
       </div>
-    </div>
-    <div class="loc reveal" aria-labelledby="loc-title">
-      <div class="loc-body">
-        <div>
-          <h3 id="loc-title">Goodman Orthodontics</h3>
-          <address>3515 Henry Hudson Pkwy Apt 2D<br>Bronx, NY 10463</address>
-          <div class="loc-links">
-            <a href="tel:9295909843" data-cta="location-call"><svg class="icon"><use href="#i-phone"/></svg>929-590-9843</a>
-            <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Goodman+Orthodontics%2C+3515+Henry+Hudson+Pkwy+Apt+2D%2C+Bronx%2C+NY+10463" target="_blank" rel="noopener" data-cta="location-directions"><svg class="icon"><use href="#i-pin"/></svg>Get Directions</a>
+      <div class="loc reveal" aria-labelledby="loc-title">
+        <div class="loc-body">
+          <div>
+            <h3 id="loc-title">Goodman Orthodontics</h3>
+            <address>3515 Henry Hudson Pkwy Apt 2D<br>Bronx, NY 10463</address>
+            <div class="loc-links">
+              <a href="tel:9295909843" data-cta="location-call"><svg class="icon"><use href="#i-phone"/></svg>929-590-9843</a>
+              <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Goodman+Orthodontics%2C+3515+Henry+Hudson+Pkwy+Apt+2D%2C+Bronx%2C+NY+10463" target="_blank" rel="noopener" data-cta="location-directions"><svg class="icon"><use href="#i-pin"/></svg>Get Directions</a>
+            </div>
+          </div>
+          <div class="hours">
+            <h4>Office Hours</h4>
+            <dl>
+              <dt>Monday</dt><dd>9:00 AM – 5:00 PM</dd>
+              <dt>Tuesday</dt><dd>9:00 AM – 5:00 PM</dd>
+              <dt>Wednesday</dt><dd>9:00 AM – 5:00 PM</dd>
+              <dt>Thursday</dt><dd>9:00 AM – 5:00 PM</dd>
+              <dt>Friday</dt><dd>9:00 AM – 5:00 PM</dd>
+              <dt>Saturday</dt><dd>Closed</dd>
+              <dt>Sunday</dt><dd>Closed</dd>
+            </dl>
           </div>
         </div>
-        <div class="hours">
-          <h4>Office Hours</h4>
-          <dl>
-            <dt>Monday</dt><dd>9:00 AM – 5:00 PM</dd>
-            <dt>Tuesday</dt><dd>9:00 AM – 5:00 PM</dd>
-            <dt>Wednesday</dt><dd>9:00 AM – 5:00 PM</dd>
-            <dt>Thursday</dt><dd>9:00 AM – 5:00 PM</dd>
-            <dt>Friday</dt><dd>9:00 AM – 5:00 PM</dd>
-            <dt>Saturday</dt><dd>Closed</dd>
-            <dt>Sunday</dt><dd>Closed</dd>
-          </dl>
-        </div>
+        <!-- Existing Google Map embed from the current landing page (Goodman Orthodontics place listing) -->
+        <iframe class="map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3016.3083102414707!2d-73.914779944458!3d40.88705138673341!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2f3c09a4025d7%3A0xd4e4df13542f2911!2sGoodman%20Orthodontics!5e0!3m2!1sen!2sus" title="Map showing Goodman Orthodontics, 3515 Henry Hudson Pkwy, Bronx, NY 10463" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
-      <!-- Existing Google Map embed from the current landing page (Goodman Orthodontics place listing) -->
-      <iframe class="map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3016.3083102414707!2d-73.914779944458!3d40.88705138673341!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2f3c09a4025d7%3A0xd4e4df13542f2911!2sGoodman%20Orthodontics!5e0!3m2!1sen!2sus" title="Map showing Goodman Orthodontics, 3515 Henry Hudson Pkwy, Bronx, NY 10463" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
+    <!-- ONE form on the page. It sits here in the footer section, and every "Book" CTA
+         lifts this same card into a popup (so there is never a second copy of the form).
+         Do not wrap this slot in an element that has a CSS transform/filter. -->
+    <div class="consult-slot" id="consultation">
+      <aside class="consult" id="consult-card" aria-labelledby="consult-title">
+        <button type="button" class="consult-close" id="consult-close" aria-label="Close consultation form"><svg class="icon"><use href="#i-close"/></svg></button>
+        <div class="consult-head">
+          <h2 id="consult-title">Book Your Free Consultation</h2>
+          <p>Braces or Invisalign — let's find the right treatment option for your smile.</p>
+        </div>
+        <!-- Existing LeadConnector / GHL form "LPF - Free Consultation For Braces Or Invisalign"
+             (mT1efDJNCsAHLQAekObX). Fields, validation, consent, CRM workflows and bot protection
+             all run inside GHL. -->
+        <div class="form-embed">
+          <p class="form-loading" aria-hidden="true">Loading secure form…</p>
+          <iframe
+            src="https://api.leadconnectorhq.com/widget/form/mT1efDJNCsAHLQAekObX"
+            id="inline-mT1efDJNCsAHLQAekObX"
+            title="Free braces or Invisalign consultation request form"
+            data-layout="{'id':'INLINE'}"
+            data-trigger-type="alwaysShow"
+            data-trigger-value=""
+            data-activation-type="alwaysActivated"
+            data-activation-value=""
+            data-deactivation-type="neverDeactivate"
+            data-deactivation-value=""
+            data-form-name="LPF - Free Consultation For Braces Or Invisalign"
+            data-height="780"
+            data-layout-iframe-id="inline-mT1efDJNCsAHLQAekObX"
+            data-form-id="mT1efDJNCsAHLQAekObX"></iframe>
+        </div>
+        <noscript><p style="padding:0 20px 20px">Please enable JavaScript to book online, or call <a href="tel:9295909843">929-590-9843</a>.</p></noscript>
+        <p class="consult-foot">Prefer to talk? <a href="tel:9295909843" data-cta="form-call"><svg class="icon"><use href="#i-phone"/></svg>Call 929-590-9843</a></p>
+      </aside>
     </div>
   </div>
 </section>
@@ -581,9 +609,11 @@ ul{margin:0;padding:0;list-style:none}
 </footer>
 
 <!-- Mobile sticky CTA -->
+<div class="consult-backdrop" id="consult-backdrop"></div>
+
 <div class="sticky-cta" id="sticky-cta" aria-hidden="true">
   <a class="btn btn-ghost" href="tel:9295909843" data-cta="sticky-call" tabindex="-1"><svg class="icon"><use href="#i-phone"/></svg>Call Now</a>
-  <a class="btn btn-primary" href="#consultation" data-cta="sticky-book" tabindex="-1">Free Consultation</a>
+  <a class="btn btn-primary" href="#consultation" data-open-consult data-cta="sticky-book" tabindex="-1">Free Consultation</a>
 </div>
 
 <script>
@@ -610,20 +640,61 @@ ul{margin:0;padding:0;list-style:none}
     setTimeout(function(){window.location.href=THANK_YOU_URL+window.location.search;},900);
   });
 
-  /* ---- Mobile sticky CTA: after scrolling starts, hidden while the form is on screen */
-  var bar=d.getElementById('sticky-cta'), card=d.getElementById('consultation');
-  if(bar&&card){
-    var formVisible=false, scrolled=false, links=bar.querySelectorAll('a');
-    var update=function(){
-      var show=scrolled&&!formVisible;
-      bar.classList.toggle('show',show);
-      bar.setAttribute('aria-hidden',show?'false':'true');
-      for(var i=0;i<links.length;i++){if(show)links[i].removeAttribute('tabindex');else links[i].setAttribute('tabindex','-1');}
-    };
-    if('IntersectionObserver' in window){
-      new IntersectionObserver(function(en){formVisible=en[0].isIntersecting;update();},{rootMargin:'-80px 0px -80px 0px'}).observe(card);
+  /* ---- Consultation popup: every [data-open-consult] CTA lifts the footer form card into a dialog.
+     The card (and its iframe) is never moved in the DOM, so the form does not reload and
+     anything already typed is kept. Without JS the same links simply jump to the footer form. */
+  var slot=d.getElementById('consultation'), card=d.getElementById('consult-card'),
+      backdrop=d.getElementById('consult-backdrop'), closeBtn=d.getElementById('consult-close'),
+      modalOpen=false, lastFocus=null;
+  function openConsult(source){
+    if(modalOpen||!card)return;
+    modalOpen=true; lastFocus=d.activeElement;
+    slot.style.minHeight=card.offsetHeight+'px';            /* keep the footer layout from collapsing */
+    card.classList.add('is-modal'); root.classList.add('modal-open');
+    card.setAttribute('role','dialog'); card.setAttribute('aria-modal','true');
+    card.scrollTop=0; closeBtn.focus(); updateSticky();
+    window.dataLayer=window.dataLayer||[];
+    window.dataLayer.push({event:'consultation_popup_open',cta:source||''});
+  }
+  function closeConsult(){
+    if(!modalOpen)return;
+    modalOpen=false;
+    card.classList.remove('is-modal'); root.classList.remove('modal-open');
+    card.removeAttribute('role'); card.removeAttribute('aria-modal');
+    slot.style.minHeight=''; updateSticky();
+    if(lastFocus&&lastFocus.focus)lastFocus.focus();
+  }
+  d.addEventListener('click',function(e){
+    var t=e.target.closest?e.target.closest('[data-open-consult]'):null;
+    if(!t)return;
+    e.preventDefault(); openConsult(t.getAttribute('data-cta'));
+  });
+  if(closeBtn)closeBtn.addEventListener('click',closeConsult);
+  if(backdrop)backdrop.addEventListener('click',closeConsult);
+  d.addEventListener('keydown',function(e){
+    if(!modalOpen)return;
+    if(e.key==='Escape'){closeConsult();return;}
+    if(e.key==='Tab'){                                       /* keep keyboard focus inside the dialog */
+      var f=card.querySelectorAll('button,iframe,a[href]'), first=f[0], last=f[f.length-1];
+      if(e.shiftKey&&d.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&d.activeElement===last){e.preventDefault();first.focus();}
     }
-    var onScroll=function(){var s=window.scrollY>240;if(s!==scrolled){scrolled=s;update();}};
+  });
+
+  /* ---- Mobile sticky CTA: after scrolling starts; hidden while the form is on screen or the popup is open */
+  var bar=d.getElementById('sticky-cta'), formVisible=false, scrolled=false;
+  function updateSticky(){
+    if(!bar)return;
+    var show=scrolled&&!formVisible&&!modalOpen, links=bar.querySelectorAll('a');
+    bar.classList.toggle('show',show);
+    bar.setAttribute('aria-hidden',show?'false':'true');
+    for(var i=0;i<links.length;i++){if(show)links[i].removeAttribute('tabindex');else links[i].setAttribute('tabindex','-1');}
+  }
+  if(bar&&slot){
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(en){formVisible=en[0].isIntersecting;updateSticky();},{rootMargin:'-80px 0px -80px 0px'}).observe(slot);
+    }
+    var onScroll=function(){var sc=window.scrollY>240;if(sc!==scrolled){scrolled=sc;updateSticky();}};
     window.addEventListener('scroll',onScroll,{passive:true});onScroll();
   }
 
